@@ -2,6 +2,7 @@
 function moduleProject2() {
   // 👇 WORK WORK BELOW THIS LINE 👇
   let startTime = new Date().getTime() // Record start time
+  // console.log(startTime);
 
   function getTimeElapsed() { // To be used at end of game to get elapsed time
     let currentTime = new Date().getTime()
@@ -36,7 +37,12 @@ function moduleProject2() {
       square.classList.add('square')
       row.appendChild(square)
       square.addEventListener('click', () => {
-        // 👉 TASK 2 - Use a click handler to target a square 👈
+        // 👉 TASK 2 - Use a click handler to target a square 
+        // console.log("you clicked!");
+        if (!square.classList.contains("targeted")) {
+          document.querySelector(".targeted").classList.remove("targeted");
+          square.classList.add("targeted");
+        };
       })
     }
   }
@@ -66,9 +72,65 @@ function moduleProject2() {
   document.addEventListener('keydown', evt => {
     // 👉 TASK 3 - Use the arrow keys to highlight a new square 👈
 
+    let up = evt.key === keys.up;
+    let down = evt.key === keys.down;
+    let left = evt.key === keys.left;
+    let right = evt.key === keys.right;
+    let spacebar = evt.key === keys.space;
+    let targeted = document.querySelector(".targeted");
+
+    if (up) {
+      if (targeted.parentElement.previousElementSibling) {
+        let l = Array.from(targeted.parentElement.children).indexOf(targeted);
+        targeted.classList.remove("targeted");
+        targeted.parentElement.previousElementSibling.children[l].classList.add("targeted");
+      };
+    } else if (down) {
+      if (targeted.parentElement.nextElementSibling) {
+        let l = Array.from(targeted.parentElement.children).indexOf(targeted);
+        targeted.classList.remove("targeted");
+        targeted.parentElement.nextElementSibling.children[l].classList.add("targeted");
+      };
+    } else if (left) {
+      if (targeted.previousElementSibling) {
+        targeted.classList.remove("targeted");
+        targeted.previousElementSibling.classList.add("targeted");
+      };
+    } else if (right) {
+      if (targeted.nextElementSibling) {
+        targeted.classList.remove("targeted");
+        targeted.nextElementSibling.classList.add("targeted");
+      };
+    }
+
     // 👉 TASK 4 - Use the space bar to exterminate a mosquito 👈
 
+    else if (spacebar) {
+      let mosquito = targeted.firstChild;
+      if (mosquito && mosquito.dataset.status === "alive") {
+        mosquito.dataset.status = "dead";
+        mosquito.parentElement.style.backgroundColor = "red";
+      };
+    };
+
     // 👉 TASK 5 - End the game 👈
+    let liveMosquitoes = document.querySelectorAll("[data-status=alive]");
+
+    if (!liveMosquitoes.length) {
+      // time
+      if (!document.querySelector("p.info").classList.contains("complete")) {
+        let elapsed = getTimeElapsed();
+        document.querySelector("p.info").textContent = `Extermination completed in ${elapsed / 1000} seconds!`;
+        document.querySelector("p.info").classList.add("complete");
+      };
+      // button
+      if (!document.querySelector("h2 button")) {
+        let restartBtn = document.createElement('button');
+        restartBtn.textContent = "Restart";
+        restartBtn.addEventListener('click', ()  => { location.reload(); });
+        document.querySelector("h2").insertAdjacentElement('beforeend', restartBtn);
+      };
+    };
   })
   // 👆 WORK WORK ABOVE THIS LINE 👆
 }
